@@ -1,0 +1,30 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker --version
+  - sudo apt-get -qq update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-engine
+  - docker --version
+
+# We have no requirements to install.
+install: true
+
+script:
+  - docker build -t edxops/python:2.7 - < python/2.7/slim/Dockerfile
+  - docker build -t edxops/python:3.5 - < python/3.5/slim/Dockerfile
+  - docker build -t edxops/python:3.6 - < python/3.6/slim/Dockerfile
+
+after_success:
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+      echo "Pushing images to Docker Hub..."
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+      docker push edxops/python:2.7;
+      docker push edxops/python:3.5;
+      docker push edxops/python:3.6;
+      echo "Finished pushing images to Docker Hub!";
+    else
+      echo "Images were NOT pushed to Docker Hub.";
+    fi
