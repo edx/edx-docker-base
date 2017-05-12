@@ -1,0 +1,36 @@
+sudo: required
+
+services:
+  - docker
+
+env:
+  global:
+  - secure: jb7/79cnbCpjyf0yDYD8BObmENNf6DqOJKUt1o4lccAV2zQzL99fk0pyqsw2xMzysC8rl5qNXidblq8B8pdvUCYbfMLhhr4Xfvz1VxKK4UXLybFQTN9jEVdumQxXYln3K0OaCebpReZanPsxVfqKa+CrGIe3E22mvNVwxH8/hKaIP2W4D4XlOl3H/IC+IoBSm/UeNcxmc60WdKElr+DL//+Hs0BDdkfFJAdyfj46Qr25zbPyxUGY7to+rNbWEs2+LhaVgnawj+r9axQX10HZ8escRV3sOse0kr0smyFVjC6E3OiR6Njk7pmfGtJ6EjfNtKJjpIl61l30t8xLeoRSduyGA6koBr/KBwZuWKGEnqtGTatqLZjdoIGf+FKH+uDPUbCFYbiXvkbzx/sLa27ULzpLkclh9xabvk+l/BLDFP/JdcCzo3pB+0yySzmQ3n5JsDM23kBsgZr8tuAZyw58gp8RimMJPWAezrDcGa6LHDBAhuUZ/Namwj9g47RqYoF/brci1qTg002jsFNSZB1AiV5qfBqtHjPHvCf88x+6xobnjZsHVQNfLeXEeD7iKXUrVGdJ0rW0FC6gCtGphPUSxNpxJs9FijOh/nK5J3MbS73x5qCfgBv7zSNQgDe6JcRfO7AklOv5j3ny0O0TSTkU4ewr5fJYaKZjB7gXSW99D6w=
+  - secure: UDJEWrn8Sohk3LJ0QEgf8UTF4koktQI3nA5A5Y0LIYEfXtrkLjL+T2oqkjWr6/OSuX58DN+IAHgDkIIog7XwEyVyEZ+TLuuiNY7/bDwJ1z71uO5KWsgYvb8sgNj8xFXsAaSoLmPbdFBu8h5Nn1mTpifLmhUBuG2VIgLnFWFp971wm9thtgvRpIHqJ7Xi5NFqbUPS6PKMWJ4848J79xT9Cqk50TbZhD06W8OhZtdOfr5jNfq7DYWiriTowmJUqNUMTOepFl6EH4cxQH2GqmwmUMKURQi98R7hQ2NGqsTAkTcR7QxZv0r9KnIsEiiPogHqfEYqz5lRfXqBpkXYknTMEQLl+0lyBp4Ge2yW7OPFPxVMY/w8AuuaJXT8WouK86YVSYM+YGviTDz58Hw82HIyZCsGStlWzMviF2BoZqr187suecANreArXqFYybfKU3ERZD3KZypO5sUrJIlqOf7ebPAIhGZg0UmtVgzvvRQXP0l5ntnnakvF0L0WK+Rj7QaRdniEJfc/4w0lbTrgOhMJQHcMshYXsXeG5ZPninmbY0rBFYFiUxw2YJOQbSVoKAuwB2DMwBoGjw1JZxr/aimEPXyPyOuwIpfbtMIKboj447SyCEv5vHlC6MBlIT3sMh4YByH4n4oeOkwcbv+puknGYISdwsj1MuUj6OxnGXfIfo8=
+
+before_install:
+  - docker --version
+  - sudo apt-get -qq update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-engine
+  - docker --version
+  # Ensure we can log into Docker Hub
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+
+# We have no requirements to install.
+install: true
+
+script:
+  - docker build -t edxops/python:2.7 - < python/2.7/slim/Dockerfile
+  - docker build -t edxops/python:3.5 - < python/3.5/slim/Dockerfile
+  - docker build -t edxops/python:3.6 - < python/3.6/slim/Dockerfile
+
+after_success:
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+      echo "Pushing images to Docker Hub..."
+      docker push edxops/python:2.7;
+      docker push edxops/python:3.5;
+      docker push edxops/python:3.6;
+      echo "Finished pushing images to Docker Hub!";
+    else
+      echo "Images were NOT pushed to Docker Hub.";
+    fi
