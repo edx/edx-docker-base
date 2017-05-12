@@ -8,18 +8,21 @@ edX Docker Images |Travis|_
 .. _Travis: https://travis-ci.org/edx/edx-docker-base
 
 
-This repository contains Docker images for edX.
+This repository contains base Docker image definitions for edX.
 
 Images
 ------
 
-====== ===========
-Image  Description
-====== ===========
-Python The Python images are based on the official slim Python images. They are intended for use with our IDAs
-       (micro-services), thus come with certain libraries pre-installed (e.g. `gettext`, `libssl`, `libjpeg`).
-====== ===========
+======  =======================================================================
+Image   Description
+======  =======================================================================
+Python  The Python images are based on the `official slim Python images`_. They
+        are intended for use with our IDAs (micro-services), thus come with
+        certain libraries pre-installed (e.g. ``gettext``, ``libssl``,
+        ``libjpeg``).
+======  =======================================================================
 
+.. _official slim Python images: https://hub.docker.com/_/python/
 
 Automated Builds
 ----------------
@@ -33,7 +36,7 @@ License
 The code in this repository is licensed under LICENSE_TYPE unless
 otherwise noted.
 
-Please see ``LICENSE.txt`` for details.
+Please see ``LICENSE`` for details.
 
 How To Contribute
 -----------------
