@@ -18,3 +18,9 @@ RUN apt-get update && \
         libssl-dev \
         nodejs \
     && rm -rf /var/lib/apt/lists/*
+
+## See https://github.com/krallin/tini/releases for latest release number
+ARG TINI_VERSION=v0.14.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
